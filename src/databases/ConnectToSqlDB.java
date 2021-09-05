@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -121,7 +122,7 @@ public class ConnectToSqlDB {
     public void insertDataFromArrayToSqlTable(int[] ArrayData, String tableName, String columnName) {
         try {
             connectToSqlDatabase();
-            ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
+            ps = connect.prepareStatement("DROP TABLE IF EXISTS " + tableName + ";");
             ps.executeUpdate();
             ps = connect.prepareStatement(
                     "CREATE TABLE `" + tableName + "` (`ID` int(11) NOT NULL AUTO_INCREMENT,`SortingNumbers` bigint(20) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
@@ -139,8 +140,33 @@ public class ConnectToSqlDB {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
+    }// objects are special because its a master class for all data types.
+    public void insertDataFromAHashMapToSqlTable(HashMap <Object, Object> hashMap, String tableName, String columnName) {
+        try {
+            connectToSqlDatabase();
+            ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
+            ps.executeUpdate();
+            ps = connect.prepareStatement(
+                    "CREATE TABLE `" + tableName + "` (`keys' VARCHAR(255) NOT NULL AUTO_INCREMENT,`Values` VARCHAR(255) DEFAULT NULL,  PRIMARY KEY (`keys`) );");
+            ps.executeUpdate();
+            for (Object obj: hashMap.keySet() ) {
 
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( 'keys') VALUES(?)");
+                ps.setInt(1, obj);
+                ps.executeUpdate();
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( 'keys') VALUES(?)");
+                ps.setInt(1, hashMap.get(obj));
+                ps.executeUpdate();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     public void insertDataFromStringToSqlTable(String ArrayData, String tableName, String columnName) {
         try {
             connectToSqlDatabase();

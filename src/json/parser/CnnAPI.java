@@ -1,5 +1,17 @@
 package json.parser;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+inport java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,11 +57,64 @@ public class CnnAPI {
 
      */
 
-    public static void main(String[] args) throws IOException, JSONException {
-        String apiKey = "";
-        String URL = "https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=" + apiKey;
 
-        JSONObject rootObject = new JSONObject(new String(Files.readAllBytes(new File("src/json/parser/data.json").toPath())));
+
+    public static void main(String[] args) throws IOException, JSONException {
+        String apiKey = "ab06edbbdad54d47846d07e80373b22a";
+        String URL = "https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=" + apiKey;
+        NewsDataClass news = null;
+        List<NewaDataClass> list1 = new ArrayList<>();
+        URL url1 = new URL(sURL);
+        URLConnection request = url1.openConnection();
+        request.connect();
+        JsonArray jsonArray= null;
+        JsonObject rootObj = null;
+        JsonParser jp = new JsonParser();
+        JsonElement root = jp.parse(new InputStreamReader(InputStream) request.getContent());
+        if (root instanceof JsonObject){
+            rootObj = root.getAsJsonObject();
+
+        } else if ( root instanceof JsonArray)
+            jsonArray = root.getAsJsonArray();
+    if (jsonArray == null)
+        jsonArray = rootObj.getAsJsonArray("Articles");
+        String source = null;
+        String author = null;
+        String title = null;
+        String description = null;
+        String url = null;
+        String urlImage = null;
+        String publishedAt = null;
+        for (int i = 0; i<jsonArray.size() - 1; i++){
+            try {
+                JsonObject jsonobject = jsonArray.get(i).getAsJsonObject();
+                source= jsonobject.get("source").toString();
+                System.out.println(source);
+                author = jsonobject.get("author").toString();
+                System.out.println(author);
+                title = jsonobject.get("title").toString();
+                System.out.println(title);
+                description = jsonobject.get("description").toString();
+                System.out.println(description);
+                url = jsonobject.get("url").toString();
+                System.out.println(url);
+                urlImage = jsonobject.get("urlToImage").toString();
+                System.out.println(urlImage);
+                publishedAt = jsonobject.get("publishedAt").toString();
+                System.out.println(publishedAt);
+                content = jsonobject.get("content").toString();
+                System.out.println(content);
+            }
+            news = new NewsDataClass(source, author, title, description, url, urlImage, publishedAt, content);
+            list1.add(news);
+            catch (Exception ex){
+        }
+
+            private static class NewsDataClass {
+                public  NewsDataClass (String source, String author, String title, String description, String url, String UrlToImage, String publishAt, String content)}
+        }
+
+       // JSONObject rootObject = new JSONObject(new String(Files.readAllBytes(new File("src/json/parser/data.json").toPath())));
 
         // Continue implementing here..
     }

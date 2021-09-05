@@ -9,7 +9,6 @@ public class EmployeeInfo {
         also implement the Employee interface into an abstract class. So create an Abstract class then inherit that
         abstract class into this EmployeeInfo class. Once you're done with designing EmployeeInfo class,
         go to FortuneEmployee class to apply all the fields and attributes.
-
     Important: YOU MUST USE:
         - OOP (Abstraction, Encapsulation, Inheritance and Polymorphism) concepts in every level possible.
         - Use all kind of keywords (super, this, static, final, etc)
