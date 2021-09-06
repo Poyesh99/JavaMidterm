@@ -15,7 +15,7 @@ public class UnitTestSorting {
     public static void main(String[] args) {
        // int[] unSortedArray = {6, 9, 2, 5, 1, 0, 4};
       //  int[] sortedArray = {0, 1, 2, 4, 5, 6, 9};
-8
+
         // Create instance of Sort class
         Sort sort = new Sort();
         int [] array = {11.15.16,12,10,20,19,13,14,18,17,5,4,1,2,3,7,6,9,8};

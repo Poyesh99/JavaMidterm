@@ -42,7 +42,7 @@ public class ProcessStudentInfo {
         String tag = "id";
 
         //Declare a Map with List<String> into it.
-        Map<String, List<Student>> list = new LinkedHashMap<String, List<Student>>();
+        Map<String, List<Student>> studentMap = new LinkedHashMap<String, List<Student>>();
 				
         /*
         Declare 2 ArrayList, accepting Student datatype, which you will use to store students from the Selenium class
@@ -58,12 +58,23 @@ public class ProcessStudentInfo {
         seleniumStudents = xmlReader.parseData(tag, pathSelenium);
 
         // Parse Data using parseData method and then store data into QTP ArrayList.
+        qtpStudents = xmlReader.parseData(tag, pathQtp);
+
 
         // Add Selenium ArrayList data into map.
+        studentMap.put("Se_Student",seleniumStudents);
 
         // Add Qtp ArrayList data into map.
+        studentMap.put("QTP_Student",qtpStudents);
 
         // Retrieve map data and display output for both maps.
+        for ( List<Student> student : studentMap.values()) {
+           for (Student s : student){
+            System.out.println(s.id) ;
+               System.out.println(s.firstName);
+               System.out.println(s.lastName);
+               System.out.println(s.score);
+        }
 
 
 
