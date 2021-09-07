@@ -48,22 +48,22 @@ public class ConnectToSqlDB {
         User user = null;
         try {
             Connection conn = connectToSqlDatabase();
-            String query = "SELECT * FROM Students";
+            String query = "SELECT * FROM Student";
             // create the java statement
-            Statement st = conn.createStatement();
+            Statement stmt = conn.createStatement();
             // execute the query, and get a java resultset
-            ResultSet rs = st.executeQuery(query);
+            ResultSet result = stmt.executeQuery(query);
             // iterate through the java resultset
-            while (rs.next()) {
-                String name = rs.getString("stName");
-                String id = rs.getString("stID");
-                String dob = rs.getString("stDOB");
+            while (result.next()) {
+                String name = result.getString("stName");
+                String id = result.getString("stID");
+                String dob = result.getString("stDOB");
                 //System.out.format("%s, %s\n", name, id);
                 user = new User(name, id, dob);
                 list.add(user);
 
             }
-            st.close();
+            stmt.close();
         } catch (Exception e) {
             System.err.println("Got an exception! ");
             System.err.println(e.getMessage());

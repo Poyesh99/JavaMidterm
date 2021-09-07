@@ -1,6 +1,6 @@
 package datastructure;
-import databases.connecToSqlDB;
 import java.util.*;
+
 
 public class UseArrayList {
 
@@ -12,23 +12,41 @@ public class UseArrayList {
          * Store and retrieve data from/to a database table.
          */
 
-        int count = 0;
-        ArrayList<Integer> array = new ArrayList<>();
-        Random r = new Random();
-        while (count < 36) {
-            array.add (r.nextInt(56));
-            count++;
+        ArrayList<String> student = new ArrayList<String>();
+
+        //add elements in ArrayList
+        student.add("Poyesh");
+        student.add("Tiana");
+        student.add("Malahat");
+        student.add("Mahsa");
+        student.add("Shabnam");
+        System.out.println("Result Before removing is:"  + student);
+
+
+        //remove method
+        student.remove( "Tiana");
+        System.out.println("Result after removing one element is: "+student);
+
+        //get method
+        System.out.println("get method: "+ student.get(2));
+
+        //for each loop
+        System.out.println("For each loop result is:" );
+        for(String name:student){
+            System.out.println(name);
+
         }
-    array.remove(12);
-        array.add(44);
-        array.stream().forEach(System.out::println);
-        int retrieve = array.get(3);
-        System.out.println("We retieved: " + retrieve);
-        collection.sort(array);
-        connectToSqlTable(array, "Array","SortingNumbers");
-        array.add(8,84);
-        array.add(9,87);
+
+        // while loop
+        System.out.println("while loop result is:");
+        int  len = student.size()-1;
+        int i= 0;
+        while (i<=len){
+            System.out.println(student.get(i));
+            i++;
+        }
 
     }
 
 }
+

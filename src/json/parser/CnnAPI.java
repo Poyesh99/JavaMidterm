@@ -9,15 +9,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
-inport java.util.List;
+
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.List;
 
 public class CnnAPI {
     /*
@@ -57,13 +54,15 @@ public class CnnAPI {
 
      */
 
-
+    private static class NewsDataClass {
+        public  NewsDataClass (String source, String author, String title, String description, String url, String UrlToImage, String publishAt, String content)}
+}
 
     public static void main(String[] args) throws IOException, JSONException {
         String apiKey = "ab06edbbdad54d47846d07e80373b22a";
         String URL = "https://newsapi.org/v2/top-headlines?sources=cnn&apiKey=" + apiKey;
         NewsDataClass news = null;
-        List<NewaDataClass> list1 = new ArrayList<>();
+        List<NewsDataClass> list1 = new ArrayList<>();
         URL url1 = new URL(sURL);
         URLConnection request = url1.openConnection();
         request.connect();
@@ -88,7 +87,7 @@ public class CnnAPI {
         for (int i = 0; i<jsonArray.size() - 1; i++){
             try {
                 JsonObject jsonobject = jsonArray.get(i).getAsJsonObject();
-                source= jsonobject.get("source").toString();
+                source = jsonobject.get("source").toString();
                 System.out.println(source);
                 author = jsonobject.get("author").toString();
                 System.out.println(author);
@@ -110,8 +109,8 @@ public class CnnAPI {
             catch (Exception ex){
         }
 
-            private static class NewsDataClass {
-                public  NewsDataClass (String source, String author, String title, String description, String url, String UrlToImage, String publishAt, String content)}
+           // private static class NewsDataClass {
+                //public  NewsDataClass (String source, String author, String title, String description, String url, String UrlToImage, String publishAt, String content)}
         }
 
        // JSONObject rootObject = new JSONObject(new String(Files.readAllBytes(new File("src/json/parser/data.json").toPath())));

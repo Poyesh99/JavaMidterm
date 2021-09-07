@@ -62,27 +62,26 @@ public class ProcessStudentInfo {
 
 
         // Add Selenium ArrayList data into map.
-        studentMap.put("Se_Student",seleniumStudents);
+        studentMap.put("Se_Student", seleniumStudents);
 
         // Add Qtp ArrayList data into map.
-        studentMap.put("QTP_Student",qtpStudents);
+        studentMap.put("QTP_Student", qtpStudents);
 
         // Retrieve map data and display output for both maps.
-        for ( List<Student> student : studentMap.values()) {
-           for (Student s : student){
-            System.out.println(s.id) ;
-               System.out.println(s.firstName);
-               System.out.println(s.lastName);
-               System.out.println(s.score);
+        for (List<Student> student : studentMap.values()) {
+            for (Student s : student) {
+                System.out.println(s.id);
+                System.out.println(s.firstName);
+                System.out.println(s.lastName);
+                System.out.println(s.score);
+            }
+
+
+            List<Student> stList = new ArrayList<>();
+            for (Student st : stList) {
+                System.out.println(st.getFirstName() + " " + st.getLastName() + " " + st.getScore() + " " + st.getId());
+            }
+
         }
 
-
-
-        List<Student> stList = new ArrayList<>();
-        for (Student st : stList) {
-            System.out.println(st.getFirstName() + " " + st.getLastName() + " " + st.getScore() + " " + st.getId());
-        }
-
-    }
-
-}
+    }}
