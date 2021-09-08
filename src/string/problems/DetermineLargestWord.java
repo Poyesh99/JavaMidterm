@@ -21,7 +21,40 @@ public class DetermineLargestWord {
         String st = "";
 
         // Implement here
+        char[] ch = wordGiven.toCharArray();
+
+        // Implement here
+        for(int i=0; i<wordGiven.length();i++){
+
+            if(ch[i] == ' '){
+                map.put(j-1,st);
+                st = "";
+                j = 1;
+            }
+            else {
+                st = st+ch[i];
+                j++;
+            }
+
+        }
+
+
+        int largest =  map.get(1).length();
+        String largestString = " ";
+
+        for (Integer i : map.keySet()) {
+
+            if( map.get(i).length() > largest){
+                largest = map.get(i).length();
+                largestString = map.get(i);
+            }
+
+        }
+        System.out.println(largest +  " "+  largestString);
+
 
         return map;
     }
 }
+
+

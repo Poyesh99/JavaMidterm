@@ -10,9 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+
 
 import parser.Student;
 
@@ -23,6 +24,18 @@ public class ConnectToSqlDB {
     public static PreparedStatement ps = null;
     public static ResultSet resultSet = null;
 
+    public static void main(String[] args) throws Exception {
+
+//        ConnectToSqlDB mySQL = new ConnectToSqlDB();
+
+        connectToSqlDatabase();
+        List<User> list = readUserProfileFromSqlTable();
+        for (User user : list) {
+            System.out.println(user.getStName() + " " + user.getStID() + " " + user.getStDOB());
+        }
+    }
+
+    //TO STREAM THE INFORMATION FROM THE SECRET.PROPERTIES::
     public static Properties loadProperties() throws IOException {
         Properties prop = new Properties();
         InputStream ism = new FileInputStream("src/secret.properties");
@@ -31,6 +44,7 @@ public class ConnectToSqlDB {
         return prop;
     }
 
+    //TO CONNECT TO THE MYSQL DATABASE:
     public static Connection connectToSqlDatabase() throws IOException, SQLException, ClassNotFoundException {
         Properties prop = loadProperties();
         String driverClass = prop.getProperty("MYSQLJDBC.driver");
@@ -38,54 +52,57 @@ public class ConnectToSqlDB {
         String userName = prop.getProperty("MYSQLJDBC.userName");
         String password = prop.getProperty("MYSQLJDBC.password");
         Class.forName(driverClass);
-        connect = DriverManager.getConnection(url, userName, password);
-        System.out.println("Database is connected");
+
+        try {
+            connect = DriverManager.getConnection(url, userName, password);
+            System.out.println("Database connected.");
+        }
+        catch (Exception e) {
+            System.out.println("COULD NOT CONNECT TO DATABASE");
+            e.printStackTrace();
+
+        }
         return connect;
     }
 
+    //TO CREATE USER(S) FROM THE STUDENT DATABASE
     public static List<User> readUserProfileFromSqlTable(){
+
         List<User> list = new ArrayList<>();
-        User user = null;
+        User user;
         try {
             Connection conn = connectToSqlDatabase();
-            String query = "SELECT * FROM Student";
-            // create the java statement
-            Statement stmt = conn.createStatement();
-            // execute the query, and get a java resultset
-            ResultSet result = stmt.executeQuery(query);
-            // iterate through the java resultset
-            while (result.next()) {
-                String name = result.getString("stName");
-                String id = result.getString("stID");
-                String dob = result.getString("stDOB");
-                //System.out.format("%s, %s\n", name, id);
+            String query = "SELECT * FROM Students;";
+
+            Statement st = conn.createStatement();
+
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                String name = rs.getString("Student");
+                String id = rs.getString("ID");
+                String dob = rs.getString("DOB");
                 user = new User(name, id, dob);
                 list.add(user);
 
             }
-            stmt.close();
+            st.close();
         } catch (Exception e) {
-            System.err.println("Got an exception! ");
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         return list;
     }
 
-    public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
-        List<User> list = readUserProfileFromSqlTable();
-        for (User user : list) {
-            System.out.println(user.getStName() + " " + user.getStID() + " " + user.getStDOB());
-        }
-    }
-
+    // TO RUN SELECT QUERIES:
     public List<String> readDataBase(String tableName, String columnName) throws Exception {
-        List<String> data = new ArrayList<String>();
+        List<String> data = new ArrayList<>();
 
         try {
             connectToSqlDatabase();
             statement = connect.createStatement();
-            resultSet = statement.executeQuery("select * from " + tableName);
+            resultSet = statement.executeQuery("SELECT " + columnName + " FROM " + tableName + ";");
             data = getResultSetData(resultSet, columnName);
+
         } catch (ClassNotFoundException e) {
             throw e;
         } finally {
@@ -94,7 +111,7 @@ public class ConnectToSqlDB {
         return data;
     }
 
-    private void close() {
+    public void close() {
         try {
             if (resultSet != null) {
                 resultSet.close();
@@ -110,52 +127,26 @@ public class ConnectToSqlDB {
         }
     }
 
-    private List<String> getResultSetData(ResultSet resultSet2, String columnName) throws SQLException {
+    //METHOD REQUIRED TO RUN QUERIES AND GET RESULTS:
+    public List<String> getResultSetData(ResultSet resultSet, String dataColumn) throws SQLException {
         List<String> dataList = new ArrayList<String>();
         while (resultSet.next()) {
-            String itemName = resultSet.getString(columnName);
+            String itemName = resultSet.getString(dataColumn);
             dataList.add(itemName);
         }
         return dataList;
     }
 
+    //TO INSERT NUMBERS FROM AN INTEGER ARRAY:
     public void insertDataFromArrayToSqlTable(int[] ArrayData, String tableName, String columnName) {
-        try {
-            connectToSqlDatabase();
-            ps = connect.prepareStatement("DROP TABLE IF EXISTS " + tableName + ";");
-            ps.executeUpdate();
-            ps = connect.prepareStatement(
-                    "CREATE TABLE `" + tableName + "` (`ID` int(11) NOT NULL AUTO_INCREMENT,`SortingNumbers` bigint(20) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
-            ps.executeUpdate();
-            for (int n = 0; n < ArrayData.length; n++) {
-                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUES(?)");
-                ps.setInt(1, ArrayData[n]);
-                ps.executeUpdate();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }// objects are special because its a master class for all data types.
-    public void insertDataFromAHashMapToSqlTable(HashMap <Object, Object> hashMap, String tableName, String columnName) {
         try {
             connectToSqlDatabase();
             ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
             ps.executeUpdate();
-            ps = connect.prepareStatement(
-                    "CREATE TABLE `" + tableName + "` (`keys' VARCHAR(255) NOT NULL AUTO_INCREMENT,`Values` VARCHAR(255) DEFAULT NULL,  PRIMARY KEY (`keys`) );");
+            ps = connect.prepareStatement("CREATE TABLE `" + tableName + "` (`Student` varchar(100), `ID` int(11) NOT NULL AUTO_INCREMENT,`DOB` varchar(100) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
             ps.executeUpdate();
-            for (Object obj: hashMap.keySet() ) {
-
-                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( 'keys') VALUES(?)");
-                ps.setInt(1, obj);
-                ps.executeUpdate();
-                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( 'keys') VALUES(?)");
-                ps.setInt(1, hashMap.get(obj));
+            for (int sn : ArrayData) {
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUE ( " + sn + ")");
                 ps.executeUpdate();
             }
 
@@ -167,12 +158,40 @@ public class ConnectToSqlDB {
             e.printStackTrace();
         }
     }
+
+    //THIS METHOD IS EXCLUSIVELY FOR THE SORTING ALGORITHMS LISTS:
+    public void sortInsertDataFromArrayToSqlTable(int[] ArrayData, String tableName, String columnName) {
+        try {
+            connectToSqlDatabase();
+            ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
+            ps.executeUpdate();
+            ps = connect.prepareStatement("CREATE TABLE `" + tableName + "` (`" + columnName +"` bigint(255) NOT NULL);");
+//                    ", PRIMARY KEY (`" + columnName +"`) );");
+            ps.executeUpdate();
+            for (int sn : ArrayData) {
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUE ( " + sn + ")");
+                ps.executeUpdate();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    //TO INSERT A RECORD INTO THE DATABASE:
     public void insertDataFromStringToSqlTable(String ArrayData, String tableName, String columnName) {
         try {
             connectToSqlDatabase();
-            ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUES(?)");
-            ps.setString(1, ArrayData);
+//            ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
+//            ps.executeUpdate();
+//            ps = connect.prepareStatement("CREATE TABLE `" + tableName + "` (`" + columnName + "` varchar(100), `ID` int(11) NOT NULL AUTO_INCREMENT,`SortingNumbers` bigint(20) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
+//            ps.executeUpdate();
+            ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUE ('" + ArrayData + "')");
             ps.executeUpdate();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -182,14 +201,37 @@ public class ConnectToSqlDB {
         }
     }
 
-    public List<String> directDatabaseQueryExecute(String passQuery, String dataColumn) throws Exception {
+    //THIS METHOD IS EXCLUSIVELY FOR DATASTRUCTURE.DATAREADER CLASS:
+    public void readerInsertDataFromStringToSqlTable(String[] array, String tableName, String columnName) {
+        try {
+            connectToSqlDatabase();
+            ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
+            ps.executeUpdate();
+            ps = connect.prepareStatement("CREATE TABLE `" + tableName + "` (`" + columnName + "` varchar(100));");
+            ps.executeUpdate();
+            for (String sn : array) {
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUE ('" + sn + "')");
+                ps.executeUpdate();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //TO RUN A QUERY AGAINST THE DATABASE:
+    public List<String> directDatabaseQueryExecute(String passQuery, String columnName) throws Exception {
         List<String> data = new ArrayList<String>();
 
         try {
             connectToSqlDatabase();
             statement = connect.createStatement();
             resultSet = statement.executeQuery(passQuery);
-            data = getResultSetData(resultSet, dataColumn);
+            data = getResultSetData(resultSet, columnName);
         } catch (ClassNotFoundException e) {
             throw e;
         } finally {
@@ -198,20 +240,18 @@ public class ConnectToSqlDB {
         return data;
     }
 
+    //TO INSERT ELEMENTS FROM A LIST OF TYPE STUDENT INSIDE A COLUMN:
     public void insertDataFromArrayListToSqlTable(List<Student> list, String tableName, String columnName) {
         try {
             connectToSqlDatabase();
             ps = connect.prepareStatement("DROP TABLE IF EXISTS `" + tableName + "`;");
             ps.executeUpdate();
-            ps = connect.prepareStatement(
-                    "CREATE TABLE `" + tableName + "` (`ID` int(11) NOT NULL AUTO_INCREMENT,`SortingNumbers` bigint(20) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
+            ps = connect.prepareStatement("CREATE TABLE `" + tableName + "` (`" + columnName + "` varchar(100), `ID` int(11) NOT NULL AUTO_INCREMENT,`DOB` varchar(100) DEFAULT NULL,  PRIMARY KEY (`ID`) );");
             ps.executeUpdate();
             for (Student st : list) {
-                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUES(?)");
-                ps.setObject(1, st);
+                ps = connect.prepareStatement("INSERT INTO " + tableName + " ( " + columnName + " ) VALUE ( '" + st + "');");
                 ps.executeUpdate();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SQLException e) {
